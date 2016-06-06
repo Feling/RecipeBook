@@ -28,13 +28,13 @@ export class RecipeEditComponent implements OnInit {
         let fbRecipeName = '';
         let fbRecipeImageUrl = '';
         let fbRecipeContent = '';
-        let fbInredients:ControlArray = new ControlArray([]);
+        let fbIngredients:ControlArray = new ControlArray([]);
 
         if (this._editMode === 'edit') {
             this._recipeIndex = +this._routeParams.get('itemIndex');
             this.recipe = this._recipeService.getRecipe(this._recipeIndex);
             for (let i = 0; i < this.recipe.ingredients.length; i++) {
-                fbInredients.push(
+                fbIngredients.push(
                     new ControlGroup(
                         {
                             name: new Control(this.recipe.ingredients[i].name, Validators.required),
@@ -55,20 +55,20 @@ export class RecipeEditComponent implements OnInit {
             name: [fbRecipeName, Validators.required],
             imageUrl: [fbRecipeImageUrl],
             content: [fbRecipeContent],
-            ingredient: this._formBuilder.array(fbInredients.controls)
+            ingredients: this._formBuilder.array(fbIngredients.controls)
         });
     }
 
 }
 
 function hasNumbers(control:Control):{[s: string]: boolean} {
-    if (!(control.value).match('\\d+')) {
+    if (!('' + control.value).match('\\d+')) {
         return {noNumbers: true};
     }
 }
 
 function greaterZero(control:Control):{[s: string]: boolean} {
-    if (!(control.value) > 0) {
+    if (!(+control.value) > 0) {
         return {toSmall: true};
     }
 }
