@@ -8,19 +8,59 @@ import {RecipeService} from "./recipe.service";
 import {Control} from "angular2/common";
 import {Validators} from "angular2/common";
 import {FormBuilder} from "angular2/common";
+import {Router} from "angular2/router";
+import {CanDeactivate} from "angular2/router";
+import {ComponentInstruction} from "angular2/router";
 @Component({
     templateUrl: 'templates/recipes/recipe-edit.tpl.html'
 
 })
 
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, CanDeactivate {
     myForm:ControlGroup;
     recipe:Recipe;
     private  _editMode = 'create';
     private _recipeIndex:number;
 
     constructor(private _routeParams:RouteParams, private _recipeService:RecipeService,
-                private _formBuilder:FormBuilder) {
+                private _formBuilder:FormBuilder, private _router:Router) {
+    }
+
+    onAddItem(itemName:string, itemAmount:string) {
+        (<ControlArray>this.myForm.controls['ingredients']).push(
+            new ControlGroup(
+                {
+                    name: new Control(itemName, Validators.required),
+                    amount: new Control(itemAmount, Validators.compose([
+                        Validators.required,
+                        hasNumbers,
+                        greaterZero
+                    ]))
+                }
+            )
+        );
+    }
+
+    onRemoveItem(index:number) {
+        (<ControlArray>this.myForm.controls['ingredients']).removeAt(index);
+    }
+
+    onSubmit() {
+        this.recipe = this.myForm.value;
+        if (this._editMode === 'edit') {
+            this._recipeService.updateRecipe(this._recipeIndex, this.recipe);
+        } else {
+            this._recipeService.insertRecipe(this.recipe);
+        }
+        this.navigateBack();
+    }
+
+    onCancel() {
+        this.navigateBack();
+    }
+
+    private navigateBack() {
+        this._router.navigate(['RecipeDetail', {recipeIndex: this._recipeIndex}]);
     }
 
     ngOnInit():any {
@@ -59,6 +99,10 @@ export class RecipeEditComponent implements OnInit {
         });
     }
 
+!!!!!!
+    routerCanDeactivate(nextInstruction:ComponentInstruction, prevInstruction:ComponentInstruction) {
+
+    }
 }
 
 function hasNumbers(control:Control):{[s: string]: boolean} {
