@@ -26,12 +26,16 @@ export class RecipeListComponent implements OnInit {
     constructor(private _recipeService:RecipeService, private _router:Router) {
     }
 
-    ngOnInit():any {
-        this.recipes = this._recipeService.getRAllRecipes();
-    }
-
     onSelect(item:Recipe) {
         this._router.navigate(['RecipeDetail', {recipeIndex: Number(this._recipeService.getRecipeIndex(item))}]);
+    }
+
+    onAddRecipe() {
+        this._router.navigate(['RecipeEdit', {editMode: 'create'}]);
+    }
+
+    ngOnInit():any {
+        this.recipes = this._recipeService.getRAllRecipes();
     }
 }
 

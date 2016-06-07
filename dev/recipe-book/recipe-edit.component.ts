@@ -21,6 +21,7 @@ export class RecipeEditComponent implements OnInit, CanDeactivate {
     recipe:Recipe;
     private  _editMode = 'create';
     private _recipeIndex:number;
+    private _submitted = false;
 
     constructor(private _routeParams:RouteParams, private _recipeService:RecipeService,
                 private _formBuilder:FormBuilder, private _router:Router) {
@@ -52,6 +53,7 @@ export class RecipeEditComponent implements OnInit, CanDeactivate {
         } else {
             this._recipeService.insertRecipe(this.recipe);
         }
+        this._submitted = true;
         this.navigateBack();
     }
 
@@ -99,9 +101,11 @@ export class RecipeEditComponent implements OnInit, CanDeactivate {
         });
     }
 
-!!!!!!
     routerCanDeactivate(nextInstruction:ComponentInstruction, prevInstruction:ComponentInstruction) {
-
+        if (this._submitted || this.myForm.pristine) {
+            return true;
+        }
+        return confirm("Sure?");
     }
 }
 

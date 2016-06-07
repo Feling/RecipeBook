@@ -21,7 +21,7 @@ export class ShoppingListService {
     }
 
     insertItems(items:Ingredient[]) {
-        Array.prototype.push(SHOPPING_LIST, items);
+        Array.prototype.push.apply(SHOPPING_LIST, items);
     }
 
     deleteItem(item:Ingredient) {
